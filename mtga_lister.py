@@ -19,7 +19,7 @@ VERSION="0.2.0"
 import json
 import os
 import sys
-from docopt import docopt
+from docopt  import docopt
 
 def get_cards(log, db):
     cards = extract_json(log, "PlayerInventory.GetPlayerCards")
@@ -75,7 +75,10 @@ def extract_json(log, flag):
 
 def main():
     args = docopt(__doc__, version=VERSION)
-    db   = json.load(open(args["--database"] or "./mtga_db.json"))
+
+    from mtga_db import db
+    if args["--database"] != None:
+        db = json.load(open(args["--database"]))
 
     if args["DECK"] is None:
         deck = None

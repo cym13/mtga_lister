@@ -1,3 +1,6 @@
+import json
+
+db = json.loads("""
 {
   "68766": {
     "name": "Blinding Radiance",
@@ -48326,3 +48329,4 @@
     "dfc": "None"
   }
 }
+""")
