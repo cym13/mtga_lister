@@ -14,7 +14,7 @@ Options:
 Arguments:
     DECK    ID of the deck to print. If missing prints the list of decks.
 """
-VERSION="0.1.0"
+VERSION="0.2.0"
 
 import json
 import os
@@ -52,8 +52,11 @@ def get_deck(log, db, deck_id):
 
 
 def get_deck_list(log):
-    return (["Collection"]
-          + [deck["name"] for deck in extract_json(log, "Deck.GetDeckLists")])
+    return [deck["name"] for deck in extract_json(log, "Deck.GetDeckLists")]
+
+
+def get_player_inventory(log):
+    return extract_json(log, "PlayerInventory.GetPlayerInventory")
 
 
 def extract_json(log, flag):
@@ -78,6 +81,8 @@ def main():
         deck = None
     elif args["DECK"].isnumeric():
         deck = int(args["DECK"])
+    elif args["DECK"] in ["c", "i"]:
+        deck = args["DECK"]
     else:
         deck = -1
 
@@ -91,24 +96,43 @@ def main():
     deck_list = get_deck_list(logcontent)
 
     if deck is None:
+        print("[c]\tCard collection")
+        print("[i]\tPlayer inventory")
         for num,each in enumerate(deck_list):
             print("[{}]\t{}".format(num, each))
         return 0
 
-    if deck == -1:
-        print("The deck ID must be numeric", out=sys.stdout)
-        return 1
-
-    if deck > len(deck_list):
-        print("No deck with ID {}".format(deck), out=sys.stdout)
-        return 1
-
-    if deck is 0:
+    if deck == "c":
+        print("// Collection")
         for name,quantity in get_cards(logcontent, db).items():
             print(quantity, name)
         return 0
 
-    deck_content = get_deck(logcontent, db, deck-1)
+    if deck == "i":
+        print("// Player inventory")
+        inventory = get_player_inventory(logcontent)
+
+        texts = {
+                    "WC Mythic:\t":   "wcMythic",
+                    "WC Rare:\t":     "wcRare",
+                    "WC Uncommon:\t": "wcUncommon",
+                    "WC Common:\t":   "wcUncommon",
+                    "Total Gold:\t":  "gold",
+                    "Total Gems:\t":  "gems"
+                }
+
+        for text,key in texts.items():
+            print(text, inventory[key])
+
+        print("Booster packs:\t",
+              sum(b["count"] for b in inventory["boosters"]))
+        return 0
+
+    if deck < 0 or deck >= len(deck_list):
+        print("No deck found with this ID".format(deck), file=sys.stderr)
+        sys.exit(1)
+
+    deck_content = get_deck(logcontent, db, deck)
     print("//", deck_content["name"])
 
     print("// Main deck_content")
