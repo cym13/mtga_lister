@@ -16,7 +16,20 @@ too.
 .. _mtgatracker: https://github.com/mtgatracker/mtgatracker
 
 The project is at the moment a simple exporter, it doesn't provide any
-overlay or tracking of win/loss ratios.
+overlay or tracking of win/loss ratios.o
+
+Limitations
+===========
+
+MTGA_Lister reads the logs produced by MTGA while it's running. This is by no
+mean a supported feature of MTGA so MTGA_Lister may break in the future.
+
+Furthermore you need to launch the game at least once to populate the logs,
+MTGA_Lister will not grab any data over the network from the MTGA servers.
+
+Also it currently support only one player, the last logged in. If you share
+your computer with multiple players then be sure to log in again to recover
+your own stats and decks.
 
 Documentation
 =============
