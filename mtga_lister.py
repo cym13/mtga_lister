@@ -89,7 +89,8 @@ def main():
     else:
         deck = -1
 
-    logfile = os.path.expanduser("~/.wine/drive_c/users/"
+    logfile = os.path.expanduser( os.environ.get("WINEPREFIX", "~/.wine")
+                                + "/drive_c/users/"
                                 + os.environ["USER"]
                                 + "/AppData/LocalLow/Wizards Of The Coast"
                                 + "/MTGA/output_log.txt")
